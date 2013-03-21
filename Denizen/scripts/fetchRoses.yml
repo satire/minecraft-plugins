@@ -1,0 +1,126 @@
+# The following scripts serve as templates for a basic
+# fetch-style quest. Editing and expanding upon this
+# is highly encouraged!
+
+
+'Fetch Roses': 
+    type: assignment
+
+    actions:
+        on assignment:
+        - trigger  name:chat toggle:true cooldown:1
+
+    interact scripts: 
+    # We want to give the requirement script the greatest priority,
+    # but it will only come first if the requirements have been met.
+    - 10 Fetch Base
+    - 20 Fetch Requirement
+
+#
+# This is the lower priority script. It is executed first,
+# as the player has not started the quest yet and doesnt
+# meet the requirements of the 'Fetch Requirement' script
+#
+'Fetch Base':
+    type: interact
+
+    steps:
+
+        'Introduction*':
+            # The click trigger is used to greet the 
+            # player, and give them the option to 
+            # help the player. Since the chat trigger
+            # is in the same step, they are not required
+            # to click the NPC before saying 'Yes' or 'No'
+            click trigger:
+                script:
+                - chat "Hello there <player.name>!"
+                - wait 1
+                - chat "My name is <npc.name>."
+                - wait 1
+                - chat "Would you be willing to get some items for me?"
+                - narrate "You can say 'Yes' or 'No'"
+
+            chat trigger:
+                # The key to the 'Yes' chat trigger
+                # is that is zaps the script to a 
+                # different step and finishes the
+                # script.
+                'Yes':
+                    trigger: /Yes/, I'll help.
+                    script: 
+                    - chat "Fantastic!"
+                    - wait 1
+                    - chat "I'm in need of some flowers for a special someone."
+                    - wait 1
+                    - chat "Bring me thiry red roses and I'll give you a reward!"
+                    - wait 1
+                    - narrate "Quest added: Bring <npc.name> thirty roses"
+                    # This zap moves the player to the 'No Roses Yet'
+                    # step of the script.
+                    - zap 'step:No Roses Yet'
+                    # This finish, notes the player has 'finished' this script
+                    - finish
+                    
+                # The 'No' trigger doesnt actually change anything,
+                # it just gives the player an option to opt out 
+                # before starting the quest.
+                'No':
+                    trigger: /No/, not now.
+                    script:
+                    - chat "That's alright, just let me know if you want to help later!"
+
+        # The player is put in this step after the
+        # quest is started. This is so that the
+        # player isnt given the introduction info
+        # over and over again. 
+        'No Roses Yet':
+
+            click trigger:
+                script:
+                - chat "Come back when you have all four of the roses!"
+
+# This script is a higher prioriy then 'Fetch Base'
+# so Denizen attempts to execute it first. The key
+# part of this is the requirement node.
+'Fetch Requirement':
+    # In order for this script to execute,
+    # Denizen must first check its requirements
+    Requirements:
+        # In this case, the player must meet ALL the 
+        # requirements in the List
+        Mode: All
+        List: 
+        # Player must have been marked as 'finished'
+        # with the 'Fetch Base' script.
+        - script FINISHED 'script:Fetch Base'
+        # The player must have 30 Red Roses in 
+        # their inventory.
+        - ITEM RED_ROSE qty:30
+    type: interact
+    steps:
+        # The click trigger executes if all the
+        # requirements are met.
+        'Got Them*':
+
+            click trigger:
+                script:
+                - ^engage now
+                - chat "You managed to get the roses!"
+                - wait 1
+                - narrate "<npc.name> grabs your flowers."
+                - take 'item:Red_Rose' qty:30
+                - wait 1
+                - chat "I bet you want a reward now, huh?"
+                - wait 1
+                - chat "I hope this will do!"
+                - wait 1
+                - ^give 'MONEY' qty:50
+                - ^narrate "<npc.name> hands you a bar of gold"
+                - wait 1
+                # Since we dont check that the player has finished the
+                # the 'Fetch Requirement' script, they are free to 
+                # return with more roses over and over thus making
+                # this quest repeatable.
+                - chat "Bring me more flowers and I'll give you another reward!"
+                - ^disengage

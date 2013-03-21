@@ -1,0 +1,100 @@
+'namzigsQuests':
+    type: assignment                      
+    interact scripts:
+    
+        - 0 selectNamzigsQuest       
+        - 1 coalNotFinished
+        
+        - 2 coalReward
+        
+    actions:
+        on assignment:
+        - trigger name:chat toggle:true cooldown:1
+        - trigger name:proximity toggle:true cooldown:1
+   
+'selectNamzigsQuest':
+    type: interact
+    steps:
+        1:        
+            PROXIMITY trigger:
+                Entry Radius: 3
+                Exit Radius: 3
+                Cooldown: 1
+                Entry:
+                    script:
+                    - ENGAGE  
+                    - LOOK location:<player.location> 
+                    - ^RANDOM 4
+                    - CHAT 'Segítsen valaki!! Rögtön leszakad ez a darab kő az égből!'                           
+                    - CHAT 'Gyorsan, több szénre van szükség!'
+                    - CHAT 'Hé te, mit állsz ott, hozz gyorsan szenet a gépeknek, különben mind itt pusztulunk!'
+                    - CHAT 'A Mester mindnyájunkat kimiskárol, ha nem sikerül növelni a teljesítményt!'
+                    - DISENGAGE
+                    
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT 'Folyamatosan csökken a kazán hőtermelése!'
+               #  - WAIT 2
+                - CHAT 'Ha nem szerzünk gyorsan szenet, nem tudjuk tovább a levegőben tartani ezt a kócerájt!'
+                - NARRATE '[H]ozok szenet a kazánba.'
+                - DISENGAGE
+                
+            CHAT trigger:
+                'coal':
+                    trigger: /H/ozok szenet a kazánba.
+                    script:
+                    - ENGAGE                     
+                    - LOOK location:<player.location>                                      
+                    - CHAT 'Na végre valaki figyel rám.' 
+                   #  - WAIT 2
+                    - CHAT 'Legalább 1200 fokkal növelnünk kell a hőtermelést, hogy tovább működjenek a propellerek.'
+                   #  - WAIT 2
+                    - CHAT 'Hozz nekem 20 szenet és mindahányan megmenekülünk.'
+                    - FLAG player namzigsQuest:coal  
+                    - NARRATE 'Gyűjts össze 20 coal-t.'
+                    - DISENGAGE
+                    
+                    
+'coalNotFinished':
+    type: interact
+    requirements:
+        mode: All
+        list:
+        - FLAGGED 'namzigsQuest:coal'      
+    steps:
+        1:    
+            PROXIMITY trigger:
+                Entry Radius: 3
+                Exit Radius: 3
+                Cooldown: 1
+                Entry:
+                    script: 
+                    - ENGAGE
+                    - CHAT 'Mindjárt elfogy az utolsó láda szén is!'
+                    - CHAT 'Mi tart ennyi ideig?'
+                    - DISENGAGE 
+                    
+                    
+'coalReward':
+    type: interact
+    requirements:
+        mode: All
+        list:
+        - FLAGGED 'namzigsQuest:coal' 
+        - ITEM 263 QTY:20
+           
+    steps:
+        1:
+            CLICK trigger:
+                script: 
+                - ENGAGE
+                - CHAT 'Megmenekültünk! Add ide a szenet gyorsan.'
+                - TAKE ITEM:263 QTY:20
+                - NARRATE '<npc.name> elvett 20 coal-t'
+                - CHAT 'Fogadd el ezt a 10 koronát, hála képpen.'
+                - GIVE MONEY QTY:10
+                - NARRATE '<npc.name> fizetett neked 10 koronát'
+                - FLAG player namzigsQuest:null
+                - DISENGAGE

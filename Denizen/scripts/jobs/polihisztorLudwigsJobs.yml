@@ -1,0 +1,259 @@
+'LudwigsJobs': 
+    type: assignment                        
+    interact scripts:
+        - 0 defaultInteract
+        - 1 leavePolihisztor
+        - 2 joinPolihisztor
+        - 3 waitingForBook
+        - 3 bookAquired
+        - 4 waitingForDiamond
+        - 4 diamondAquired
+
+    default constants:
+        jobsCooldown: 60       
+    
+    actions:
+        on assignment:
+        - trigger name:chat toggle:true radius:5 cooldown:1
+        - trigger name:proximity toggle:true radius:5 cooldown:1
+ 
+'defaultInteract':
+    type: interact
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Jelenleg nincs munkám a számodra!"
+                - DISENGAGE       
+
+'joinPolihisztor':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - -FLAGGED 'jobQuest:begin'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Üdvözöllek vándor!"
+                - WAIT 1
+                - CHAT "A nevem <npc.name>, ha szeretnél eszközöket, fegyvereket páncélokat fejleszteni, van néhány kiváló feladatom a számodra."
+                - NARRATE "Polihisztor feladat [f]elvétele"              
+                - DISENGAGE                
+                
+            CHAT trigger:
+                'joinEnchanter':
+                    trigger: Szeretném /f/elvenni a polihisztor feladatot.
+                    script:
+                    - ENGAGE
+                    - CHAT "Mielőtt beavatnálak, a fejlesztések rejtelmeibe, szükségem van néhány dologra, amit össze kell gyűjtened és elhoznod nekem."
+                    - WAIT 1
+                    - CHAT "Először is kell <gold>1 könyv<green>."
+                    - NARRATE "Szerezz <gold>1 könyvet <white><npc.name>-nek."
+                    - FLAG player 'jobQuest:begin'
+                    - FLAG player 'polihisztorQuest:book'
+                    - DISENGAGE
+
+'waitingForBook':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - FLAGGED 'polihisztorQuest:book'
+    steps:
+        1:           
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Hozz nekem egy könyvet!"                
+                - NARRATE "[A]bbahagyom a küldetést."              
+                - DISENGAGE
+                
+            CHAT trigger:
+                'endPolihisztorQuest':
+                    trigger: /A/bbahagyom a küldetést.
+                    script:
+                    - ENGAGE 
+                    - CHAT "Sajnálom, hogy nem sikerült, talán legközelebb."     
+                    - FLAG player 'polihisztorQuest:null'
+                    - FLAG player 'jobQuest:null'
+                    - DISENGAGE                     
+
+'bookAquired':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - FLAGGED 'polihisztorQuest:book'
+            - ITEM 340 QTY:1 
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location> 
+                    - CHAT "Látom megszerezted a könyvet.Add át nekem és megkapod a következő feladatot."                         
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Nagyszerű!"
+                - WAIT 1
+                - TAKE ITEM:340 QTY:1
+                - NARRATE "<npc.name> elvett tőled <gold>1 <green> könyvet."
+                - CHAT "Mostmár csak két dologra van szükségem."
+                - WAIT 1
+                - CHAT "Mindkettőt a legalsó bánya szinten tudod megszerezni."
+                - WAIT 1
+                - CHAT "Hozz nekem <gold>2 gyémántot <green>és <gold>4 obszidiánt."
+                - WAIT 1
+                - FLAG player 'polihisztorQuest:diamond'
+                - DISENGAGE         
+
+'waitingForDiamond':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - FLAGGED 'polihisztorQuest:diamond'
+    steps:
+        1:           
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Hozz nekem <gold>2 gyémántot <green>és <gold>4 obszidiánt."                
+                - NARRATE "[A]bbahagyom a küldetést."              
+                - DISENGAGE
+                
+            CHAT trigger:
+                'endPolihisztorQuest':
+                    trigger: /A/bbahagyom a küldetést.
+                    script:
+                    - ENGAGE 
+                    - CHAT "Sajnálom, hogy nem sikerült, talán legközelebb."     
+                    - FLAG player 'polihisztorQuest:null'
+                    - FLAG player 'jobQuest:null'
+                    - DISENGAGE      
+                 
+
+'diamondAquired':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - FLAGGED 'polihisztorQuest:diamond'
+            - ITEM 264 QTY:2
+            - ITEM 49 QTY:4
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location> 
+                    - CHAT "Gratulálok! Add ide az itemeket, és elkezdhetsz polihisztorként dolgozni."                         
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Köszönöm!"
+                - WAIT 1
+                - TAKE ITEM:264 QTY:2
+                - NARRATE "<npc.name> elvett tőled <gold>2 <green>gyémántot."
+                - TAKE ITEM:49 QTY:4
+                - NARRATE "<npc.name> elvette tőled <gold>4 <green>obszidiánt."                
+                - EXECUTE as_server "mcjobsadmin add <player.name> polihisztor"
+                - CHAT "A polihisztor nagyon fontos szerepet tölt be a városok életében."
+                - WAIT 1
+                - CHAT "Mostantól a te feladatod, a városlakók fegyvereinek és szerszámainak fejlesztése."
+                - WAIT 1
+                - CHAT "A feladat alapfizetéssel is jár, de a városlakók is felbérelhetnek, vagy boltokban árulhatod a fejlesztéseidet."
+                - WAIT 1
+                - CHAT "A polihisztor feladatairól és alapfizetéséről a &e/jobs polihisztor &aparanccsal tájékozódhatsz."
+                - WAIT 1
+                - CHAT "Jutalmúl, amiért összegyűjtötted nekem az itemeket, adok egy fejlesztő asztalt."
+                - GIVE ITEM:116 QTY:1
+                - NARRATE "<npc.name> adott neked egy fejlesztő asztalt."
+                - WAIT 1
+                - CHAT "Sok sikert kívánok a fejlesztésekhez!" 
+                - FLAG player 'employed:true'
+                - FLAG player 'job:polihisztor'
+                - FLAG player 'polihisztorQuest:null'
+                - FLAG player 'jobQuest:null'                               
+                - DISENGAGE            
+
+'leavePolihisztor':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - FLAGGED 'employed:true'
+            - FLAGGED 'job:Polihisztor'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Köszöntelek <gold><player.name><green> polihisztor!"
+                - WAIT 1
+                - CHAT "Ha szeretnéd leadni a polihisztor feladatokat szólj bátran."               
+                - NARRATE "Polihisztor feladat [l]eadása"
+                - NARRATE "<red>A feladatot 5 óra mulva veheted fel ismét és a tapasztalati pontjaid törlődnek!"               
+                - DISENGAGE
+                
+            CHAT trigger:               
+                'leaveEnchanter':
+                    trigger: Szeretném /l/eadni a polihisztor feladatot.
+                    script:
+                    - ENGAGE
+                    - EXECUTE as_server "mcjobsadmin remove <player.name> polihisztor"
+                    - FLAG player 'polihisztorQuest:null'
+                    - FLAG player 'jobQuest:null'
+                    - FLAG player 'employed:false'
+                    - FLAG player 'job:null'
+                    - COOLDOWN PLAYER <cons:jobsCooldown> "SCRIPT:joinPolihisztor" 
+                    - DISENGAGE

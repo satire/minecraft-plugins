@@ -1,0 +1,126 @@
+jobs:
+  bányász:
+    description: Ásóval és csákánnyal végzett munkákért fizet.
+    basepay: 0.25
+    exp: 0.25
+    break:
+      pays: true
+      hide: false
+      tier1: stone coal_ore netherrack iron_ore glowing_redstone_ore glowstone gold_ore lapis_ore diamond_ore obsidian emerald_ore dirt sand grass gravel clay soul_sand mycel
+  erdész:
+    description: Az erdők rendbentartását, telepítését végzi.
+    basepay: 0.25
+    exp: 0.25
+    break:
+      pays: true
+      hide: false
+      tier1: leaves log
+    place:
+      pays: true
+      hide: false
+      tier2: sapling
+  építész:
+    description: Kő illetve fa építőelemek lerakásáért és elkészítéséért fizet.
+    basepay: 0.1
+    exp: 0.1
+    place:
+      pays: true
+      hide: false
+      tier1: wood wood_stairs sign_post wooden_door wall_sign furnace workbench trap_door chest fence bed_block ladder cobblestone_stairs step stone_plate glass thin_glass fence_gate stone brick brick_stairs sandstone smooth_brick smooth_stairs nether_brick nether_fence nether_brick_stairs iron_door_block dispenser bookshelf iron_fence brewing_stand enchantment_table
+    craft:
+      pays: true
+      hide: false
+      tier1: wood_stairs sign_post wooden_door wall_sign trap_door fence bed_block ladder step fence_gate birch_wood_stairs jungle_wood_stairs spruce_wood_stairs bookshelf ender_chest
+  katona:
+    description: A katona feladata a vadon biztosítása, a szörnyek legyőzése.
+    basepay: 1.5
+    show_every_time: true
+    exp: 1.5
+    defeat:
+      pays: true
+      hide: false
+      tier1: wolf spider zombie skeleton slime
+      tier2: enderman creeper cave_spider
+      tier3: pig_zombie ghast
+      tier4: blaze magma_cube
+      tier5: silverfish
+  földműves:
+    description: Növények ültetése, állatok levágása a feladata, a földműves termeli meg az alapvető élelmiszereket.
+    basepay: 0.25
+    exp: 0.25
+    break:
+      pays: true
+      hide: false
+      tier5: brown_mushroom red_mushroom crops cactus sugar_cane_block pumpkin melon_block nether_warts
+    place:
+      pays: true
+      hide: false
+      tier1: melon_stem pumpkin_stem seeds
+    defeat:
+      pays: true
+      hide: false
+      tier3: cow chicken pig sheep
+  kovács:
+    description: .
+    basepay: 1.0
+    exp: 1.0
+    craft:
+      pays: true
+      hide: false
+      tier1: stone_axe stone_spade stone_hoe stone_pickaxe stone_sword
+      tier2: gold_axe gold_spade gold_hoe gold_pickaxe gold_sword bow leather_helmet leather_boots leather_chestplate leather_leggings
+      tier3: iron_axe iron_spade iron_hoe iron_pickaxe compass iron_sword iron_helmet iron_boots gold_helmet gold_boots iron_chestplate iron_leggings gold_chestplate gold_leggings
+      tier4: diamond_axe diamond_spade diamond_hoe diamond_pickaxe diamond_sword diamond_helmet diamond_boots diamond_chestplate diamond_leggings
+    repair:
+      pays: true
+      hide: false
+      tier1: stone_axe stone_spade stone_hoe stone_pickaxe stone_sword bow leather_helmet leather_boots leather_chestplate leather_leggings
+      tier2: gold_axe iron_axe gold_spade iron_spade gold_hoe iron_hoe gold_pickaxe iron_pickaxe gold_sword iron_sword iron_helmet gold_helmet iron_boots gold_boots iron_chestplate gold_chestplate iron_leggings gold_leggings
+      tier3: diamond_axe diamond_spade diamond_hoe diamond_pickaxe diamond_sword diamond_helmet diamond_boots diamond_chestplate diamond_leggings
+  halász:
+    description: Halak kifogásáért fizet.
+    basepay: 10.0
+    show_every_time: true
+    exp: 1.0
+    fishing:
+      pays: true
+      hide: false
+      tier1: dropped_item
+  pék:
+    description: Főtt ételek készítéséért fizet.
+    basepay: 0.25
+    show_every_time: true
+    exp: 0.25
+    craft:
+      pays: true
+      hide: false
+      tier1: cooked_fish bread sugar cooked_beef cooked_chicken grilled_pork cookie mushroom_soup fermented_spider_eye cake speckled_melon golden_apple
+  druida:
+    description: Védekező bájitalok készítéséért fizet.
+    basepay: 10
+    show_every_time: true
+    exp: 1
+    potions:
+      pays: true
+      hide: false
+      tier1: regen swift fire_res strength health fire_res_ext fire_res_spl swift_spl swift_ext swift_two health_spl health_two regen_spl regen_ext regen_two strength_spl strength_ext strength_two fire_res_ext_spl swift_ext_spl swift_two_spl health_two_spl regen_ext_spl regen_two_spl strength_two_spl strength_ext_spl
+  méregkeverő:
+    description: Támadó bájitalok készítéséért fizet.
+    basepay: 10
+    show_every_time: true
+    exp: 1
+    potions:
+      pays: true
+      hide: false
+      tier1: mundane mundane_ext thick poison weak slow harm poison_spl poison_ext poison_two weak_spl weak_ext slow_ext slow_spl harm_spl harm_two poison_ext_spl poison_two_spl weak_ext_spl slow_ext_spl harm_two_spl
+  polihisztor:
+    description: Fegyverek, páncélok és eszközök fejlesztéséért fizet.
+    basepay: 10.0
+    show_every_time: true
+    exp: 10.0
+    enchant:
+      pays: true
+      hide: false
+      tier1: arrow_dmg_1 arrow_fire arrow_inf arrow_knock_1 sharp_1 boa_1 dmg_undead_1 fire_aspect_1 knockback_1 looting_1 arrow_dmg_2 respiration_1 protection_1 blast_prot_1 feather_fall_1 fire_prot_1 proj_prot_1 aqua_affinity efficiency_1 unbreaking_1 fortune_1
+      tier2: arrow_knock_2 sharp_2 boa_2 dmg_undead_2 fire_aspect_2 knockback_2 looting_2 arrow_dmg_3 sharp_3 boa_3 dmg_undead_3 looting_3 respiration_2 protection_2 blast_prot_2 feather_fall_2 fire_prot_2 proj_prot_2 respiration_3 protection_3 blast_prot_3 feather_fall_3 fire_prot_3 proj_prot_3 efficiency_2 unbreaking_2 fortune_2 efficiency_3 unbreaking_3 fortune_3
+      tier3: arrow_dmg_4 sharp_4 boa_4 dmg_undead_4 arrow_dmg_5 sharp_5 boa_5 dmg_undead_5 protection_4 blast_prot_4 feather_fall_4 fire_prot_4 proj_prot_4 efficiency_4 unbreaking_4 efficiency_5 unbreaking_5 silk_touch

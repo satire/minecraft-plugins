@@ -1,0 +1,69 @@
+'welcomeToPandora': 
+    type: assignment                        
+    interact scripts:
+        - 0 interactInPandora
+
+    default constants:
+        welcomeWhere: Pandora
+        tpWhere: Skyheaven      
+        tpX: 541 
+        tpY: 144
+        tpZ: -1193
+        price: 50        
+    
+    actions:
+        on assignment:
+        - trigger name:chat toggle:true radius:5 cooldown:1
+        - trigger name:proximity toggle:true radius:5 cooldown:1
+        
+
+'interactInPandora':
+    type: interact
+
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 3
+                Exit Radius: 3
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>
+                    - CHAT "Köszöntelek <cons:welcomeWhere>-ban! Miben segíthetek?"
+                    - NARRATE "[u]tazás <cons:tpWhere>-be. (<cons:price> korona)"
+                    - NARRATE "[a] Masinériák Mesterét keresem."                     
+                
+            CHAT trigger:
+                'utazas':
+                    trigger: <cons:tpWhere>-be szeretnék /u/tazni.
+                    script:
+                    - LOOK location:<player.location>
+                   # - WAIT 1
+                    - IF <player.money> MORE <cons:price> 
+                        RUNTASK "script:warp"
+                      ELSE IF <player.money> == <cons:price> 
+                        RUNTASK "script:warp"
+                      ELSE
+                        CHAT 'Nincs elég pénzed!' 
+
+                'masineriakMester':
+                    trigger: /a/ Masinériák Mesterét keresem.
+                    script:
+                    - LOOK location:<player.location>
+                   #  - WAIT 1                    
+                    - CHAT 'A Masinériák Mestere a központi gépteremben van. Vigyázz vele, nagyon mogorva alak, nem szereti ha zavarják.'
+                      
+            DAMAGE trigger:
+                script:
+                - LOOK location:<player.location>
+                - CHAT 'Auch!!'
+            
+'warp':
+    type: task
+    script:     
+    - CHAT 'A léghajó azonnal indul! Az utazás <cons:price> koronába kerül.' 
+    - TAKE MONEY QTY:<cons:price>    
+   #  - WAIT 1
+    - EXECUTE as_op "tp <player.name> <cons:tpX> <cons:tpY> <cons:tpZ>"
+     
+

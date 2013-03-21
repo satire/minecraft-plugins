@@ -1,0 +1,193 @@
+'ZeldasJobs': 
+    type: assignment                        
+    interact scripts:
+        - 0 defaultInteract
+        - 1 leaveMeregkevero
+        - 2 joinMeregkevero
+        - 3 zeldaWaitingForReady
+        - 3 zeldaReadyToBecameAMeregkevero
+
+    default constants:
+        jobsCooldown: 60       
+    
+    actions:
+        on assignment:
+        - trigger name:chat toggle:true radius:5 cooldown:1
+        - trigger name:proximity toggle:true radius:5 cooldown:1
+ 
+'defaultInteract':
+    type: interact
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Jelenleg nincs munkám a számodra!"
+                - DISENGAGE       
+
+'joinMeregkevero':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - -FLAGGED 'jobQuest:begin'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Üdvözöllek vándor!"
+                - WAIT 1
+                - CHAT "Az én nevem <npc.name>."
+                - WAIT 1
+                - CHAT "Szeretnél méregkeevrő lenni?"
+                - NARRATE "Méregkeverő feladat [f]elvétele"              
+                - DISENGAGE
+                
+                
+            CHAT trigger:
+                'joinEnchanter':
+                    trigger: Szeretném /f/elvenni a méregkeverő feladatot.
+                    script:
+                    - ENGAGE
+                    - CHAT "A méregkeverő mindenféle támadó bájital készítésével foglalkozik."
+                    - WAIT 1
+                    - CHAT "A bájitalok főzéséhez azonban magadnak kell megszerezned a szükséges felszerelést."
+                    - WAIT 1                   
+                    - CHAT "A legfontosabb összetevője a lángrúd, amit csak a pokolból hozhatsz fel."
+                    - NARRATE "Készíts egy lepárlót és térj vissza <npc.name>hoz."
+                    - LISTEN ITEM ID:<player.name>_meregkeveroListener TYPE:CRAFT ITEMS:BREWING_STAND_ITEM|BREWING_STAND QTY:1 SCRIPT:zeldaStandCrafted
+                    - FLAG player 'meregkeveroQuest:begin'
+                    - FLAG player 'jobQuest:begin'
+                                        
+                    - DISENGAGE
+
+
+'zeldaStandCrafted':
+    type: task
+    script:
+    - FLAG player 'meregkeveroQuest:finished'
+    - NARRATE "Elkészítetted a lepárlót, térj vissza Zeldához a városba." 
+
+'zeldaWaitingForReady':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - FLAGGED 'meregkeveroQuest:begin'
+    steps:
+        1:           
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Készíts egy lepárló eszközt a bájitalok főzéséhez."                
+                - NARRATE "[A]bbahagyom a küldetést."              
+                - DISENGAGE
+                
+            CHAT trigger:
+                'enderdeszQuest':
+                    trigger: /A/bbahagyom a küldetést.
+                    script:
+                    - ENGAGE 
+                    - CHAT "Sajnálom, hogy nem sikerült, talán legközelebb."
+                    - LISTEN CANCEL ID:<player.name>_meregkeveroListener
+                    - LISTEN FINISH ID:<player.name>_meregkeveroListener     
+                    - FLAG player 'jobQuest:null'
+                    - FLAG player 'meregkeveroQuest:null'
+                    - DISENGAGE         
+
+'zeldaReadyToBecameAMeregkevero':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - FLAGGED 'meregkeveroQuest:finished'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location> 
+                    - CHAT "Gratulálok, látom elkészítetted a lepárlót."                         
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Mostmár elkezdheted a bájital főzést."
+                - EXECUTE as_server "mcjobsadmin add <player.name> méregkeverő"
+                - WAIT 1                
+                - FLAG player 'meregkeveroQuest:null'
+                - FLAG player 'jobQuest:null'
+                - FLAG player 'employed:true'
+                - FLAG player 'job:méregkeverő'                
+                - DISENGAGE         
+
+'leaveMeregkevero':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - FLAGGED 'employed:true'
+            - FLAGGED 'job:méregkeverő'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Köszöntelek <gold><player.name><green>!"
+                - WAIT 1
+                - CHAT "Ha szeretnéd leadni a méregkeverő munkát, csak szólj nekem."               
+                - NARRATE "Druida feladat [l]eadása"
+                - NARRATE "<red>A feladatot 5 óra mulva veheted fel ismét és a tapasztalati pontjaid törlődnek!"               
+                - DISENGAGE
+                
+            CHAT trigger:               
+                'leaveDruida':
+                    trigger: Szeretném /l/eadni a druidaz feladatot.
+                    script:
+                    - ENGAGE
+                    - EXECUTE as_server "mcjobsadmin remove <player.name> méregkeverő"
+                    - FLAG player 'meregkeveroQuest:null'
+                    - FLAG player 'jobQuest:null'
+                    - FLAG player 'employed:false'
+                    - FLAG player 'job:null'
+                    - COOLDOWN PLAYER <cons:jobsCooldown> "SCRIPT:joinMeregkevero" 
+                    - DISENGAGE
+                    
+                    
+                    

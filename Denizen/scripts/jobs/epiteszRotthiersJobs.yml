@@ -1,0 +1,191 @@
+'RotthiersJobs': 
+    type: assignment                        
+    interact scripts:        
+        - 0 defaultInteract
+        - 1 leaveEpitesz
+        - 2 joinEpitesz
+        - 3 waitingForBlocks
+        - 3 blocksAquired
+    
+    default constants:
+        jobsCooldown: 60       
+    
+    actions:
+        on assignment:
+        - trigger name:chat toggle:true radius:5 cooldown:1
+        - trigger name:proximity toggle:true radius:5 cooldown:1
+
+'defaultInteract':
+    type: interact
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - CHAT "Jelenleg nincs munkám a számodra!"
+                - DISENGAGE
+                
+'joinEpitesz':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'katona:true'
+            - -FLAGGED 'epitesz:true'
+            - -FLAGGED 'katonaQuest:begin'
+            - -FLAGGED 'katonaQuest:finished'            
+            - -FLAGGED 'epiteszQuest:begin'
+                        
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Üdvözöllek vándor!"
+                - WAIT 1
+                - CHAT "A nevem <npc.name>, én segítelek Snowbourn világának építésében."
+                - NARRATE "<gray>Katona VAGY építész feladatot bárki felvehet a választott szakmája mellé."
+                - NARRATE "Építész feladat [f]elvétele"           
+                - DISENGAGE                 
+                
+            CHAT trigger:
+                'joinEpitesz':
+                    trigger: Szeretném /f/elvenni az építész munkát
+                    script:
+                    - ENGAGE 
+                    - CHAT "Ahoz hogy építész légy, hoznod kell nekem néhányat a legfontosabb építőanyagokból."
+                    - WAIT 1             
+                    - CHAT "Hozz nekem <gold>64 kőtéglát<green>, <gold>32 tölgyfa rönköt <green>és <gold>20 fehér gyapjút<green>."     
+                    - FLAG player 'epiteszQuest:begin'
+                    - DISENGAGE                   
+
+'waitingForBlocks':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'katona:true'
+            - -FLAGGED 'epitesz:true'
+            - -FLAGGED 'katonaQuest:begin'
+            - -FLAGGED 'katonaQuest:finished'
+            - FLAGGED 'epiteszQuest:begin'
+    steps:
+        1:           
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Hozz nekem <gold>64 kőtéglát<green>, <gold>32 tölgyfa rönköt <green>és <gold>20 fehér gyapjút<green>."  
+                - NARRATE "[A]bbahagyom a küldetést."              
+                - DISENGAGE
+                
+            CHAT trigger:
+                'endKatonaQuest':
+                    trigger: /A/bbahagyom a küldetést.
+                    script:
+                    - ENGAGE 
+                    - CHAT "Sajnálom, hogy nem sikerült, talán legközelebb."     
+                    - FLAG player 'epiteszQuest:null'
+                    - DISENGAGE                     
+
+'blocksAquired':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'katona:true'
+            - -FLAGGED 'epitesz:true'
+            - -FLAGGED 'katonaQuest:begin'
+            - -FLAGGED 'katonaQuest:finished'
+            - FLAGGED 'epiteszQuest:begin'
+            - ITEM 98 qty:64 
+            - ITEM 17 qty:32
+            - ITEM 35 qty:20
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location> 
+                    - CHAT "Látom megszerezted az anyagokat. Add át őket, és beállhatsz építésznek."                         
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Köszönöm!"                
+                - TAKE ITEM:98 QTY:64
+                - NARRATE "<npc.name> elvett tőled <gold>64 kőtéglát<white>."
+                - TAKE ITEM:17 QTY:32
+                - NARRATE "<npc.name> elvett tőled <gold>32 tölgyfa rönköt<white>."
+                - TAKE ITEM:35 QTY:20
+                - NARRATE "<npc.name> elvett tőled <gold>20 gyapjút<white>."
+                - EXECUTE as_server "mcjobsadmin add <player.name> építész"                  
+                - FLAG player 'epitesz:true'
+                - FLAG player 'epiteszQuest:null'
+                - CHAT "Kérlek olvasd el a szerver építési és városalapítási szabályzatát."
+                - WAIT 1
+                - CHAT "Szolgálataidért fogadd el ezt az 50 koronát."
+                - GIVE MONEY QTY:50
+                - NARRATE "<npc.name> adott neked <gold>50 koronát<white>."
+                - DISENGAGE         
+                   
+               
+'leaveEpitesz':
+    type: interact
+    requirements:
+        mode: All
+        list:            
+            - FLAGGED 'epitesz:true'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Köszöntelek <gold><player.name><green>!"
+                - WAIT 1
+                - CHAT "Miben segíthetek?"                                
+                - NARRATE "Építész feladat [l]eadása" 
+                - NARRATE "<red>A feladatot 5 óra mulva veheted fel ismét és a tapasztalati pontjaid törlődnek!"
+                               
+                - DISENGAGE
+                
+            CHAT trigger:               
+                'leaveEnchanter':
+                    trigger: Szeretném /l/eadni az építész feladatot.
+                    script:
+                    - ENGAGE
+                    - EXECUTE as_server "mcjobsadmin remove <player.name> építész"
+                    - FLAG player 'epitesz:false'
+                    - COOLDOWN PLAYER <cons:jobsCooldown> "SCRIPT:joinEpitesz" 
+                    - DISENGAGE
+

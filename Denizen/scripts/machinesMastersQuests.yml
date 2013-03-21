@@ -1,0 +1,203 @@
+'machinesMastersQuests': 
+    type: assignment                      
+    interact scripts:       
+    
+        - 0 selectMachinesMastersQuest
+        
+        - 1 repairNotFinished
+        - 1 findNotFinished
+                 
+        - 2 repairReward
+        - 2 findReward
+        - 2 furnaceReward
+        
+        
+        
+    actions:
+        on assignment:
+        - trigger name:chat toggle:true cooldown:1
+        - trigger name:proximity toggle:true cooldown:1
+    default action:
+        - 1 WANDER DELAY:12 RADIUS:10 SPEED:.75 FILTER:GRASS
+
+'selectMachinesMastersQuest':
+    type: interact
+    requirements:
+        mode: All
+        list:      
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 3
+                Exit Radius: 3
+                Cooldown: 1
+                Entry:
+                    script:
+                    - ^RANDOM 4
+                    - CHAT 'Ez a **** destabilizátor már megint akadozik!!'
+                    - CHAT 'Hol a **** hagytam a kisbaltámat?'
+                    - CHAT 'Mi a ****-t csinálnak ezek a kazánban!!'           
+                    - CHAT 'Ki umplangolta meg a drongáslámpát!?'
+            
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT 'Ki meri zavarni a Masinériák Mesterét? Nem látod hogy dolgom van!?'
+               #  - WAIT 1
+                - NARRATE '[S]egítek megjavítani a destabilizátort.'
+                - NARRATE '[M]egkeresem a baltáját!'
+                - NARRATE 'M[e]gnézem miért csökken a hőösszeg.'
+                - DISENGAGE
+            
+            CHAT trigger:
+                'repair':
+                    trigger: /s/egítek megjavítani a destabilizátort.
+                    script:
+                    - ENGAGE
+                    - LOOK location:<player.location>                                        
+                    - CHAT 'Ez a beszéd! Örülök hogy ilyen segítőkész emberek vannak.' 
+                   #  - WAIT 2
+                    - CHAT 'A destabilizátor főtengelyének lefittyedt a csappantyúja.'
+                   #  - WAIT 2
+                    - CHAT 'Ha lenne valamilyen ragacsom, megjavíthatnám.'
+                   #  - WAIT 2
+                    - CHAT 'Azoknak az **** mocsári szörnyeknek a nyálkája pont jó lenne, de nem hagyhatom el a géptermet.'
+                   #  - WAIT 2
+                    - CHAT 'Hozz nekem 20 ragacs labdát azokból a lényekből, és nem marad el a jutalmad.'
+                    - FLAG player machinesMastersQuest:repair
+                    - NARRATE 'Gyűjts össze 20 slime ball-t.'
+                    - DISENGAGE
+                    
+                'find':
+                    trigger: Szívesen /m/egkeresem a kisbaltát.
+                    script:
+                    - ENGAGE
+                    - LOOK location:<player.location>                                                           
+                    - CHAT 'Elnézést amiért rádförmedtem, igazán hálás lennék ha elhoznád nekem a kedvenc baltámat.'
+                   #  - WAIT 2
+                    - CHAT 'Biztosan az az átok Lumbiddle csente ki a szerszámosládámból.'
+                   #  - WAIT 2
+                    - CHAT 'A révésznél javítja a bizgentyűk kallantyúit.'
+                   #  - WAIT 2
+                    - CHAT 'Ha megtalálod, add oda neki ezt a használati utasítást, mielőtt szét**** az egész hóbelebancot!'
+                   #  - WAIT 2
+                    - GIVE ITEM:339 QTY:1
+                    - NARRATE '<npc.name> adott neked egy használati útmutatót.'
+                    - FLAG player machinesMastersQuest:find
+                    - NARRATE 'Keresd meg Lumbiddle-t és szerezd vissza a baltát.'
+                    - DISENGAGE
+
+                'furnace':
+                    trigger: M/e/gnézem miért csökken a hőösszeg. 
+                    script:
+                    - ENGAGE
+                    - LOOK location:<player.location>
+                    #- FLAG player machinesMastersQuest:furnace                   
+                    - CHAT 'Végre egy kompetens ember! Nem árt, ha valaki kezelésbe veszi azokat a léhűtőket a kazánházban.'
+                    - DISENGAGE
+                    
+            DAMAGE trigger:
+                Script:
+                - LOOK location:<player.location>
+                - CHAT 'Auch!!'
+
+'repairNotFinished':
+    type: interact
+    requirements:
+        mode: All
+        list:
+        - FLAGGED 'machinesMastersQuest:repair'      
+    steps:
+        1:    
+            PROXIMITY trigger:
+                Entry Radius: 3
+                Exit Radius: 3
+                Cooldown: 1
+                Entry:
+                    script: 
+                    - ENGAGE
+                    - CHAT 'Hozz gyorsan 20 ragacsot!'
+                    - DISENGAGE
+
+'findNotFinished':
+    type: interact
+    requirements:
+        mode: All
+        list:
+        - FLAGGED 'machinesMastersQuest:find'      
+    steps:
+        1:    
+            PROXIMITY trigger:
+                Entry Radius: 3
+                Exit Radius: 3
+                Cooldown: 1
+                Entry:
+                    script: 
+                    - ENGAGE
+                    - CHAT 'Miért nincs nálad a baltám?'
+                   #  - WAIT 1
+                    - CHAT 'Ne is lássalak amíg nem kerítetted elő!'
+                    - DISENGAGE
+                    
+'repairReward':
+    type: interact
+    requirements:
+        mode: All
+        list:
+        - FLAGGED 'machinesMastersQuest:repair'
+        - ITEM SLIME_BALL qty:20       
+    steps:
+        1:    
+            CLICK trigger:
+                script: 
+                - ENGAGE
+                - CHAT 'Végre megszerezted nekem a ragacsot.'                        
+                - TAKE 'ITEM:SLIME_BALL' QTY:20
+                - NARRATE '<npc.name> elvett tőled 20 ragacsot'
+                - GIVE MONEY QTY:10
+                - NARRATE '<npc.name> fizetett neked 10 koronát'
+               #  - WAIT 3
+                - CHAT 'Mostmár megjavíthatom a destabilizátort'
+                - FLAG player machinesMastersQuest:null
+                - COOLDOWN PLAYER DURATION:60 SCRIPT:selectMachinesMastersQuest
+                - DISENGAGE
+                
+'findReward':
+    type: interact
+    requirements:
+        mode: All
+        list:
+        - FLAGGED 'machinesMastersQuest:findFinished'
+        - ITEM 275 QTY:1
+           
+    steps:
+        1:
+            CLICK trigger:
+                script: 
+                - ENGAGE
+                - CHAT 'Óh hát megszerezted az én egyetlen kisbaltám!'
+                - TAKE ITEM:275 QTY:1
+                - NARRATE '<npc.name> elvette a baltát'
+               #  - WAIT 3
+                - CHAT 'Fogadd el ezt a 10 koronát, hála képpen.'
+                - GIVE MONEY QTY:10
+                - NARRATE '<npc.name> fizetett neked 10 koronát'
+                - FLAG player machinesMastersQuest:null
+                - COOLDOWN DURATION:18h SCRIPT:'findReward'
+                - DISENGAGE
+                
+'furnaceReward':
+    type: interact
+    requirements:
+        mode: All
+        list:
+        - FLAGGED 'machinesMastersQuest:furnace'
+
+    steps:
+        1:
+            CLICK trigger:
+                script: 
+                - CHAT 'furnace YEEE'
+                - FLAG player machinesMastersQuest:null
+                   

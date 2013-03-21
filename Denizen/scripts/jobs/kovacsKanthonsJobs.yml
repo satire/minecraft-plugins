@@ -1,0 +1,209 @@
+'KanthonsJobs': 
+    type: assignment                        
+    interact scripts:
+        - 0 defaultInteract
+        - 1 leaveKovacs
+        - 2 joinKovacs
+        - 3 kanthonWaitingForIron
+        - 3 kovacsFinished
+
+    default constants:
+        jobsCooldown: 60       
+    
+    actions:
+        on assignment:
+        - trigger name:chat toggle:true radius:5 cooldown:1
+        - trigger name:proximity toggle:true radius:5 cooldown:1
+ 
+'defaultInteract':
+    type: interact
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Jelenleg nincs munkám a számodra!"
+                - DISENGAGE       
+
+'joinKovacs':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - -FLAGGED 'jobQuest:begin'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Üdvözöllek vándor!"
+                - WAIT 1
+                - CHAT "Az én nevem <npc.name>."
+                - WAIT 1
+                - CHAT "Ha érdekel a kovács mesterség, beavatlak a fortélyaiba"
+                - NARRATE "Kovács mesterség [f]elvétele"              
+                - DISENGAGE
+                
+                
+            CHAT trigger:
+                'joinEnchanter':
+                    trigger: Szeretném /f/elvenni a kovács mesterséget.
+                    script:
+                    - ENGAGE
+                    - CHAT "Szívesen megtanítanálak, de épp eltört az üllőm."
+                    - WAIT 1
+                    - CHAT "Ha hozol nekem <gold>31 vasat <green>a bányászok vezetőjétől, meg tudom javítani az üllőt és felvehetlek kovácsnak."
+                    - WAIT 1
+                    - CHAT "Adok neked <gold>100 koronát <green>a vasra."
+                    - GIVE MONEY QTY:100
+                    - NARRATE "<npc.name> adott neked <gold>100 koronát<white>, vegyél <gold>31 vasat <white>Latirtól"                   
+                    - FLAG player 'kovacsQuest:begin'
+                    - FLAG player 'jobQuest:begin'                                        
+                    - DISENGAGE
+
+'kanthonWaitingForIron':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - FLAGGED 'kovacsQuest:begin'
+    steps:
+        1:           
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Hozz nekem <gold>31 vasat <green>Latirtól, a bányászok vezetőjétől."                
+                - NARRATE "[A]bbahagyom a küldetést."              
+                - DISENGAGE
+                
+            CHAT trigger:
+                'endKovacsQuest':
+                    trigger: /A/bbahagyom a küldetést.
+                    script:
+                    - ENGAGE 
+                    - CHAT "Sajnálom, hogy nem sikerült, talán legközelebb."    
+                    - FLAG player 'jobQuest:null'
+                    - FLAG player 'kovacsQuest:null'
+                    - FLAG player 'banyaszQuest:null'
+                    - LISTEN CANCEL ID:<player.name>_kovacsListener
+                    - LISTEN FINISH ID:<player.name>_kovacsListener
+                    - TAKE MONEY QTY:100
+                    - TAKE 'latirsPickAxe' QTY:1
+                    - DISENGAGE                     
+
+'kovacsFinished':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - FLAGGED 'kovacsQuest:finished'
+            - ITEM 265 QTY:31
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location> 
+                    - CHAT "Örülök, hogy ilyen hamar visszaértél."                         
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Remek munkát végeztél."                
+                - WAIT 1
+                - CHAT "Végre meg tudom javítani az üllőket."
+                - TAKE ITEM:265 QTY:31
+                - NARRATE "<npc.name> elvett tőled <gold>31 vasat<white>."
+                - WAIT 5
+                - CHAT "Mostmár örömmel felveszlek kovácsnak."
+                - EXECUTE as_server "mcjobsadmin add <player.name> kovács"
+                - WAIT 1                
+                - CHAT "Ahoz hogy elkezdhess kovácsként dolgozni, adok neked egy üllőt."
+                - GIVE ITEM:145 QTY:1
+                - NARRATE "<npc.name> adott neked <gold>1 üllőt<white>."
+                - FLAG player 'kovacsQuest:null'
+                - FLAG player 'jobQuest:null'
+                - FLAG player 'employed:true'
+                - FLAG player 'job:kovács'                
+                - DISENGAGE         
+
+'leaveKovacs':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - FLAGGED 'employed:true'
+            - FLAGGED 'job:kovács'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Köszöntelek <gold><player.name><green>!"
+                - WAIT 1
+                - CHAT "Ha szeretnéd leadni a kovács munkát, csak szólj nekem."               
+                - NARRATE "Erdész feladat [l]eadása"
+                - NARRATE "<red>A feladatot 5 óra mulva veheted fel ismét és a tapasztalati pontjaid törlődnek!"               
+                - DISENGAGE
+                
+            CHAT trigger:               
+                'leaveKovacs':
+                    trigger: Szeretném /l/eadni a kovács mesterséget.
+                    script:
+                    - ENGAGE
+                    - EXECUTE as_server "mcjobsadmin remove <player.name> kovács"
+                    - FLAG player 'kovacsQuest:null'
+                    - FLAG player 'jobQuest:null'
+                    - FLAG player 'employed:false'
+                    - FLAG player 'job:null'
+                    - COOLDOWN PLAYER <cons:jobsCooldown> "SCRIPT:joinKovacs" 
+                    - DISENGAGE
+                    
+                    
+'tusansAxe':
+    type: item
+    material: 258
+    display name: "Tusan baltája"
+#    lore:
+#    - first line of lore
+#    - second line of lore
+    enchantments:
+    - DIG_SPEED:3
+    - LOOT_BONUS_BLOCKS:1
+
+ 

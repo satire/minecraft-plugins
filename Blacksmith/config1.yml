@@ -1,0 +1,82 @@
+# Blacksmith Configuration
+base-prices:
+   
+    stone-pickaxe: 25 
+    stone-spade: 25
+    stone-hoe: 25 
+    stone-sword: 25 
+    stone-axe: 25 
+    
+    gold-pickaxe: 75 
+    gold-spade: 75 
+    gold-hoe: 75 
+    gold-sword: 100 
+    gold-axe: 75 
+    
+    iron-pickaxe: 50 
+    iron-spade: 50 
+    iron-hoe: 50
+    iron-sword: 100 
+    iron-axe: 50 
+    
+    diamond-pickaxe: 100 
+    diamond-spade: 100 
+    diamond-hoe: 100
+    diamond-sword: 100 
+    diamond-axe: 100
+     
+    bow: 100     
+    
+    leather-helmet: 100 
+    leather-chestplate: 100 
+    leather-leggings: 100 
+    leather-boots: 100
+     
+    chainmail-helmet: 300
+    chainmail-chestplate: 300 
+    chainmail-leggings: 300 
+    chainmail-boots: 300
+     
+    gold-helmet: 100 
+    gold-chestplate: 100 
+    gold-leggings: 100 
+    gold-boots: 100
+     
+    iron-helmet: 100 
+    iron-chestplate: 100 
+    iron-leggings: 100 
+    iron-boots: 100 
+    
+    diamond-helmet: 200 
+    diamond-chestplate: 200 
+    diamond-leggings: 200
+    diamond-boots: 200
+
+    default: 10
+    
+price-per-durability-point:
+    default: 0.1
+    
+defaults:
+    messages:
+        busy-with-player: §cMost nem érek rá, gyere vissza később!
+        busy-with-reforge: §cIgyekszem, légy türelmes!
+        cooldown-not-expired: §cHagyj pihenni kicsit!
+        cost: §eA(z) §a<item>§e javítása §a<price> §ekorona! Klikk újra, ha elfogadod az árat!
+        fail-reforge: §cHoppá, ennek nem szabadott volna megtörténnie!!!
+        insufficient-funds: §cNincs elég pénzed a javításra
+        invalid-item: §cSajnálom, nem tudok mit kezdeni azzal!
+        item-changed-during-reforge: §cBiztos ezt szeretnéd megjavíttatni?
+        start-reforge: §eLássuk, mit kezdhetek ezzel...
+        successful-reforge: §eTessék, kész is! Jobb mint új korában.
+
+drop-item: true
+percent-chance-to-fail-reforge: 0
+percent-chance-for-extra-enchantments: 2
+maximum-enchantments: 3
+delays-in-seconds:
+    maximum: 10
+    minimum: 5
+reforge-cooldown: 30
+enchantment-modifiers:
+    default: 75

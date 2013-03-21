@@ -1,0 +1,187 @@
+'ArthursJobs': 
+    type: assignment                        
+    interact scripts:        
+        - 0 defaultInteract
+        - 1 leaveKatona
+        - 2 joinKatona
+        - 3 killReward
+        - 3 waitingToKillComplete
+    
+    default constants:
+        jobsCooldown: 60 
+        numberOfMobsKill: 20       
+    
+    actions:
+        on assignment:
+        - trigger name:chat toggle:true radius:5 cooldown:1
+        - trigger name:proximity toggle:true radius:5 cooldown:1
+
+'defaultInteract':
+    type: interact
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - CHAT "Jelenleg nincs munkám a számodra!"
+                - DISENGAGE
+                
+'joinKatona':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'katona:true'
+            - -FLAGGED 'epitesz:true'
+            - -FLAGGED 'katonaQuest:begin'
+            - -FLAGGED 'katonaQuest:finished'
+            - -FLAGGED 'epiteszQuest:begin'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Üdvözöllek vándor!"
+                - WAIT 1
+                - CHAT "A nevem <npc.name>, nállam csatlakozhatsz a városi haderőhöz."
+                - NARRATE "<gray>Katona VAGY építész feladatot bárki felvehet a választott szakmája mellé."
+                - NARRATE "Katona feladatok [f]elvétele"           
+                - DISENGAGE                 
+                
+            CHAT trigger:
+                'joinKatona':
+                    trigger: Szeretném /f/elvenni a katona munkát
+                    script:
+                    - ENGAGE
+                    
+                    - CHAT "Ahoz hogy katona lehess, előbb bizonyítanod kell rátermettségedet."
+                    - WAIT 1
+                    - CHAT "Ölj meg legalább <cons:numberOfMobsKill> szörnyet a város körül és térj vissza hozzám."
+                    - WAIT 1
+                    - NARRATE 'Ölj meg összesen <cons:numberOfMobsKill>-at a következő szörnyekből:'
+                    - NARRATE '<gold>zombie<white>, <gold>skeleton<white>, <gold>spider<white>, <gold>creeper<white>, <gold>slime<white>, <gold>cave spider<white>, <gold>enderman'
+                    - LISTEN KILL ID:<player.name>_katonaListener TYPE:ENTITY NAME:ZOMBIE|SKELETON|SPIDER|CREEPER|SLIME|CAVE_SPIDER|ENDERMAN QTY:<cons:numberOfMobsKill> SCRIPT:killComplete
+                    
+                    - FLAG player 'katonaQuest:begin'                   
+                    - DISENGAGE
+        
+'killComplete':
+    type: task
+    script:
+    - FLAG player 'katonaQuest:finished'
+    - NARRATE "Megöltél 20 szörnyet, térj vissza Arthurhoz a városba."  
+
+'waitingToKillComplete':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - FLAGGED 'katonaQuest:begin'
+    steps:
+        1:           
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Ölj meg <cons:numberOfMobsKill> szörnyet!"                
+                - NARRATE "[A]bbahagyom a küldetést."              
+                - DISENGAGE
+                
+            CHAT trigger:
+                'endKatonaQuest':
+                    trigger: /A/bbahagyom a küldetést.
+                    script:
+                    - ENGAGE 
+                    - CHAT "Sajnálom, hogy nem sikerült, talán legközelebb." 
+                    - LISTEN CANCEL ID:<player.name>_katonaListener
+                    - LISTEN FINISH ID:<player.name>_katonaListener   
+                    - FLAG player 'katonaQuest:null'
+                    - DISENGAGE    
+                
+'killReward':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'katona:true'
+            - -FLAGGED 'epitesz:true'
+            - FLAGGED 'katonaQuest:finished'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Örülök hogy épségben visszatértél <gold><player.name><green>!"
+                - WAIT 1
+                - CHAT "Igazán jó katona válhat belőled."
+                - EXECUTE as_server "mcjobsadmin add <player.name> katona"                  
+                - FLAG player 'katona:true'
+                - FLAG player 'katonaQuest:null'
+                - DISENGAGE         
+
+
+    
+'leaveKatona':
+    type: interact
+    requirements:
+        mode: All
+        list:            
+            - FLAGGED 'katona:true'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Erőt, egészséget katona!"
+                - WAIT 1
+                - CHAT "Miben segíthetek?"                                
+                - NARRATE "Katona feladat [l]eadása"
+                - NARRATE "<red>A feladatot 5 óra mulva veheted fel ismét és a tapasztalati pontjaid törlődnek!" 
+                               
+                - DISENGAGE
+                
+            CHAT trigger:               
+                'leaveEnchanter':
+                    trigger: Szeretném /l/eadni a Katona feladatot.
+                    script:
+                    - ENGAGE
+                    - EXECUTE as_server "mcjobsadmin remove <player.name> katona"
+                    - FLAG player 'katona:false'
+                    - COOLDOWN PLAYER <cons:jobsCooldown> "SCRIPT:joinKatona" 
+                    - DISENGAGE
+

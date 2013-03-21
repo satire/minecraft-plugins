@@ -1,0 +1,323 @@
+'LatirsJobs': 
+    type: assignment                        
+    interact scripts:
+        - 0 defaultInteract
+        - 1 leaveBanyasz
+        - 2 joinBanyasz
+        - 3 waitingForStick
+        - 3 stickAquired
+        - 4 kanthonsQuest
+        - 5 latirWaitingForIron
+        - 5 latirironAquired
+
+    default constants:
+        jobsCooldown: 60       
+    
+    actions:
+        on assignment:
+        - trigger name:chat toggle:true radius:5 cooldown:1
+        - trigger name:proximity toggle:true radius:5 cooldown:1
+ 
+'defaultInteract':
+    type: interact
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Jelenleg nincs munkám a számodra!"
+                - DISENGAGE       
+
+'joinBanyasz':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - -FLAGGED 'jobQuest:begin'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Üdvözöllek vándor!"
+                - WAIT 1
+                - CHAT "Az én nevem <npc.name>."
+                - WAIT 1
+                - CHAT "Itt jelentkezhetsz bányásznak."
+                - NARRATE "Bányász feladat [f]elvétele"              
+                - DISENGAGE
+                
+                
+            CHAT trigger:
+                'joinEnchanter':
+                    trigger: Szeretném /f/elvenni a bányász feladatot.
+                    script:
+                    - ENGAGE
+                    - FLAG player 'banyaszQuest:begin'
+                    - FLAG player 'jobQuest:begin'
+                    - CHAT "Mielőtt felvennélek, hozz nekem <gold>2 botot <green>amiből nyelet készíthetek a csákányomnak."                    
+                    - DISENGAGE
+
+'waitingForStick':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - FLAGGED 'banyaszQuest:begin'
+    steps:
+        1:           
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Hozz nekem <gold>2 botot <green>amiből nyelet készíthetek."                
+                - NARRATE "[A]bbahagyom a küldetést."              
+                - DISENGAGE
+                
+            CHAT trigger:
+                'endBanyaszQuest':
+                    trigger: /A/bbahagyom a küldetést.
+                    script:
+                    - ENGAGE 
+                    - CHAT "Sajnálom, hogy nem sikerült, talán legközelebb."     
+                    - FLAG player 'jobQuest:null'
+                    - FLAG player 'banyaszQuest:null'
+                    - DISENGAGE                     
+
+'stickAquired':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - FLAGGED 'banyaszQuest:begin'
+            - ITEM 280 QTY:2 
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location> 
+                    - CHAT "Örülök, hogy ilyen hamar visszaértél. Add gyorsan a botokat."                         
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Így ni!"                
+                - TAKE ITEM:280 QTY:2
+                - NARRATE "<npc.name> elvett tőled <gold>2 botot<white>."
+                - WAIT 1
+                - CHAT "Mostmár örömmel felveszlek bányásznak."
+                - EXECUTE as_server "mcjobsadmin add <player.name> bányász"
+                - WAIT 1
+                - CHAT "És amiért segítettél, fogadd el ezt a csákányt, ezzel öröm lesz bányászni!"
+                - GIVE "item:latirsPickAxe"
+                - NARRATE "<npc.name> adott neked egy csákányt."                
+                - FLAG player 'banyaszQuest:null'
+                - FLAG player 'jobQuest:null'
+                - FLAG player 'employed:true'
+                - FLAG player 'job:bányász'                
+                - DISENGAGE         
+
+'leaveBanyasz':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - FLAGGED 'employed:true'
+            - FLAGGED 'job:Bányász'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Köszöntelek <gold><player.name><green>!"
+                - WAIT 1
+                - CHAT "Ha szeretnéd leadni a bányász munkát, csak szólj nekem."               
+                - NARRATE "Bányász feladat [l]eadása"
+                - NARRATE "<red>A feladatot 5 óra mulva veheted fel ismét és a tapasztalati pontjaid törlődnek!"               
+                - DISENGAGE
+                
+            CHAT trigger:               
+                'leaveEnchanter':
+                    trigger: Szeretném /l/eadni a bányász feladatot.
+                    script:
+                    - ENGAGE
+                    - EXECUTE as_server "mcjobsadmin remove <player.name> bányász"
+                    - FLAG player 'banyaszQuest:null'
+                    - FLAG player 'jobQuest:null'
+                    - FLAG player 'employed:false'
+                    - FLAG player 'job:null'
+                    - COOLDOWN PLAYER <cons:jobsCooldown> "SCRIPT:joinBanyasz" 
+                    - DISENGAGE
+
+
+'kanthonsQuest':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - FLAGGED 'kovacsQuest:begin'
+            - FLAGGED 'jobQuest:begin'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>
+                    
+            CLICK trigger:
+                script:  
+                - NARRATE "[E]lmondom miért jöttem" 
+                         
+            CHAT trigger:               
+                'kanthonsQuest':
+                    trigger: Jó napot! Kanthon, a kovácsm/e/ster küldött, hogy vegyek neki vasat.
+                    script:
+                    - ENGAGE
+                    - CHAT 'Üdvözöllek, sajnos pont nincs egy szem vasam sem.'
+                    - WAIT 1
+                    - CHAT 'De a bányákban könnyen találsz, adok kölcsön egy csákányt ami segítségedre lesz.'
+                    - GIVE "item:latirsPickAxe"
+                    - NARRATE "<npc.name> adott neked egy csákányt."
+                    - CHAT 'Ha megszerezted a vasércet, hozd vissza nekem a csákányt és kiolvasztom a vasad.'
+                    - WAIT 1
+                    - CHAT 'De vigyázz, ha nem kapom vissza a csákányt, soha többé nem állok szóba veled.'
+                    - NARRATE "Bányássz ki <gold>31 vasércet<white> és térj vissza <npc.name>-hez."
+                    - LISTEN BLOCK ID:<player.name>_kovacsListener TYPE:BREAK BLOCK:15 QTY:31 SCRIPT:mineComplete
+                    - FLAG player 'banyaszQuest:getIron'                    
+                    - DISENGAGE
+
+'latirironAquired':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - FLAGGED 'kovacsQuest:begin'
+            - FLAGGED 'jobQuest:begin'
+            - FLAGGED 'banyaszQuest:ironAquired'
+            - ITEM 15 QTY:31
+            - ITEM 'latirsPickAxe' QTY:1  
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>
+                    - CHAT "Örülök, hogy ilyen hamar visszaértél." 
+                    
+            CLICK trigger:  
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Nagyszerű! Azonnal kiolvasztom neked az érceket."
+                - TAKE ITEM:15 QTY:31
+                - NARRATE "<npc.name> elvett tőled <gold>31 vasércet<white>."
+                - WAIT 5
+                - CHAT "Tessék."               
+                - GIVE ITEM:265 QTY:31
+                - NARRATE "<npc.name> adott neked <gold>31 vasat<white>."
+                - CHAT "Ne feledkezz meg a csákányról."
+                - TAKE 'latirsPickAxe' QTY:1
+                - NARRATE "Visszaadtad a csákányt."
+                - CHAT "Mostmár mehetsz vissza Kanthonhoz a vasakkal."
+                - FLAG player 'kovacsQuest:finished'
+                - FLAG player 'banyaszQuest:null'
+                - DISENGAGE         
+            
+
+'latirWaitingForIron':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - FLAGGED 'kovacsQuest:begin'
+            - FLAGGED 'jobQuest:begin'
+            - FLAGGED 'banyaszQuest:getIron'
+    
+    steps:
+        1:           
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Bányássz ki <gold>31 vasércet<green>."                
+                - NARRATE "[A]bbahagyom a küldetést."              
+                - DISENGAGE
+                
+            CHAT trigger:
+                'endBanyaszQuest':
+                    trigger: /A/bbahagyom a küldetést.
+                    script:
+                    - ENGAGE 
+                    - CHAT "Sajnálom, hogy nem sikerült, talán legközelebb."     
+                    - FLAG player 'jobQuest:null'
+                    - FLAG player 'kovacsQuest:null'
+                    - FLAG player 'banyaszQuest:null'
+                    - LISTEN CANCEL ID:<player.name>_kovacsListener
+                    - LISTEN FINISH ID:<player.name>_kovacsListener
+                    - TAKE MONEY QTY:100
+                    - TAKE 'latirsPickAxe' QTY:1
+                    - DISENGAGE 
+
+                        
+'mineComplete':
+    type: task
+    script:
+    - FLAG player 'banyaszQuest:ironAquired'
+    - NARRATE "Megszerezted a <gold>31 vasércet <white>térj vissza Latirhez." 
+    
+'latirsPickAxe':
+    type: item
+    material: 257
+    display name: "Latir csákánya"
+#    lore:
+#    - first line of lore
+#    - second line of lore
+    enchantments:
+    - DIG_SPEED:3
+    - LOOT_BONUS_BLOCKS:1
+
+ 

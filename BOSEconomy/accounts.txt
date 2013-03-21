@@ -1,0 +1,20 @@
+satire {
+	type player
+	money 8.0
+}
+lacika {
+	type player
+	money 99.0
+}
+lacika1 {
+	type player
+	money 98.0
+}
+towny-war-chest {
+	type player
+	money 105.0
+}
+town-Town {
+	type player
+	money 10090.0
+}

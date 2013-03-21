@@ -1,0 +1,17 @@
+default {
+	type wage
+	disabled false
+	excluded true
+	locked false
+	master 
+	onlineMode false
+	bracketInterval 
+	value 0.0
+	members {
+		town-Town 1
+		towny-war-chest 1
+		lacika 1
+		lacika1 1
+		satire 1
+	}
+}

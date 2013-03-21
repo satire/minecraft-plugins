@@ -1,0 +1,62 @@
+# Whether debug information about Denizen should appear in the
+# server console
+
+Debug:
+  Show: true
+
+Scripts:
+  Queue Speed: 0.5s
+  Load Scripts in Subfolders: true
+
+# The default options for new Denizens
+
+Traits:
+  Health:
+    Enabled: false
+    Respawn:
+      Enabled: true
+      Delay: 10s
+    Animated Death:
+      Enabled: true
+
+Triggers:
+  Chat:
+    Enabled: true
+    Cooldown: 2s
+    Range: 3
+    Overhearing Range: 4
+    Prerequisites:
+      Must Be Able to See NPC: true
+      Must Be Looking in Direction of NPC: true
+    Formats:
+      Player to NPC: "You -> <npc.name.nickname>: <text>"
+      Player to NPC Overheard: "<player.name> -> <npc.name.nickname>: <text>"
+    Appears Globally:
+      If Triggers Missing: false
+      If Triggers Failed: false
+      If NPC Uninteractable: false
+  Click:
+    Enabled: true
+    Cooldown: 2s
+    Allows Left Click: false
+  Damage:
+    Enabled: false
+    Cooldown: 0.5s
+  Location:
+    Enabled: false
+    Cooldown: 5s
+    Range: 2
+  Proximity:
+    Enabled: false
+    Cooldown: 1s
+    Range: 10
+
+Commands:
+  Engage:
+    Timeout: 150s
+
+# The version of this configuration file, used to check if your
+# configuration file is outdated or too new
+
+Config:
+  Version: 2

@@ -1,0 +1,193 @@
+'FulgursJobs': 
+    type: assignment                        
+    interact scripts:
+        - 0 defaultInteract
+        - 1 leaveDruida
+        - 2 joinDruida
+        - 3 fulgurWaitingForReady
+        - 3 fulgurReadyToBecameADruid
+
+    default constants:
+        jobsCooldown: 60       
+    
+    actions:
+        on assignment:
+        - trigger name:chat toggle:true radius:5 cooldown:1
+        - trigger name:proximity toggle:true radius:5 cooldown:1
+ 
+'defaultInteract':
+    type: interact
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Jelenleg nincs munkám a számodra!"
+                - DISENGAGE       
+
+'joinDruida':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - -FLAGGED 'jobQuest:begin'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Üdvözöllek vándor!"
+                - WAIT 1
+                - CHAT "Az én nevem <npc.name>."
+                - WAIT 1
+                - CHAT "Szeretnél druida lenni?"
+                - NARRATE "Druida feladat [f]elvétele"              
+                - DISENGAGE
+                
+                
+            CHAT trigger:
+                'joinEnchanter':
+                    trigger: Szeretném /f/elvenni az druida feladatot.
+                    script:
+                    - ENGAGE
+                    - CHAT "A druida védekező, gyógyító bájitalok főzésével foglalkozik."
+                    - WAIT 1
+                    - CHAT "A bájitalok főzéséhez azonban magadnak kell megszerezned a szükséges felszerelést."
+                    - WAIT 1                   
+                    - CHAT "A legfontosabb összetevője a lángrúd, amit csak a pokolból hozhatsz fel."
+                    - NARRATE "Készíts egy lepárlót és térj vissza <npc.name>hoz."
+                    - LISTEN ITEM ID:<player.name>_druidaListener TYPE:CRAFT ITEMS:BREWING_STAND_ITEM|BREWING_STAND QTY:1 SCRIPT:fulgurStandCrafted
+                    - FLAG player 'druidaQuest:begin'
+                    - FLAG player 'jobQuest:begin'
+                                        
+                    - DISENGAGE
+
+
+'fulgurStandCrafted':
+    type: task
+    script:
+    - FLAG player 'druidaQuest:finished'
+    - NARRATE "Elkészítetted a lepárlót, térj vissza Fulgurhoz a városba." 
+
+'fulgurWaitingForReady':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - FLAGGED 'druidaQuest:begin'
+    steps:
+        1:           
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Készíts egy lepárló eszközt a bájitalok főzéséhez."                
+                - NARRATE "[A]bbahagyom a küldetést."              
+                - DISENGAGE
+                
+            CHAT trigger:
+                'enderdeszQuest':
+                    trigger: /A/bbahagyom a küldetést.
+                    script:
+                    - ENGAGE 
+                    - CHAT "Sajnálom, hogy nem sikerült, talán legközelebb."
+                    - LISTEN CANCEL ID:<player.name>_druidaListener
+                    - LISTEN FINISH ID:<player.name>_druidaListener     
+                    - FLAG player 'jobQuest:null'
+                    - FLAG player 'druidaQuest:null'
+                    - DISENGAGE         
+
+'fulgurReadyToBecameADruid':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - FLAGGED 'druidaQuest:finished'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location> 
+                    - CHAT "Gratulálok, látom elkészítetted a lepárlót."                         
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Mostmár elkezdheted a bájital főzést."
+                - EXECUTE as_server "mcjobsadmin add <player.name> druida"
+                - WAIT 1                
+                - FLAG player 'druidaQuest:null'
+                - FLAG player 'jobQuest:null'
+                - FLAG player 'employed:true'
+                - FLAG player 'job:druida'                
+                - DISENGAGE         
+
+'leaveDruida':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - FLAGGED 'employed:true'
+            - FLAGGED 'job:druida'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Köszöntelek <gold><player.name><green>!"
+                - WAIT 1
+                - CHAT "Ha szeretnéd leadni az druida munkát, csak szólj nekem."               
+                - NARRATE "Druida feladat [l]eadása"
+                - NARRATE "<red>A feladatot 5 óra mulva veheted fel ismét és a tapasztalati pontjaid törlődnek!"               
+                - DISENGAGE
+                
+            CHAT trigger:               
+                'leaveDruida':
+                    trigger: Szeretném /l/eadni a druidaz feladatot.
+                    script:
+                    - ENGAGE
+                    - EXECUTE as_server "mcjobsadmin remove <player.name> druida"
+                    - FLAG player 'druidaQuest:null'
+                    - FLAG player 'jobQuest:null'
+                    - FLAG player 'employed:false'
+                    - FLAG player 'job:null'
+                    - COOLDOWN PLAYER <cons:jobsCooldown> "SCRIPT:joinDruida" 
+                    - DISENGAGE
+                    
+                    
+                    

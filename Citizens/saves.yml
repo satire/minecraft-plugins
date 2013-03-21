@@ -1,0 +1,394 @@
+# Citizens NPC Storage
+
+
+npc:
+  '0':
+    traits:
+      lookclose:
+        range: '5.0'
+        realisticlooking: false
+        enabled: false
+      owner: satire
+      triggers:
+        enabled:
+          CHAT: true
+          DAMAGE: false
+          CLICK: true
+          PROXIMITY: true
+        duration:
+          CHAT: 1.0
+          PROXIMITY: 1.0
+        radius:
+          CHAT: 5
+          PROXIMITY: 5
+      spawned: true
+      assignment:
+        assignment: WELCOMETOPANDORA
+      speech: chat
+      location:
+        world: world
+        x: '-312.1766760943094'
+        y: '64.0'
+        z: '299.8831230408003'
+        yaw: '241.74172973632812'
+        pitch: '0.0'
+    name: Dalfoodle
+    traitnames: owner,constants,triggers,type,spawned,assignment,speech,location
+    navigator:
+      speed: '1.0'
+      pathfindingrange: '25.0'
+      stationaryticks: -1
+      speedmodifier: '1.0'
+      avoidwater: false
+      usedefaultstuckaction: true
+  '1':
+    traits:
+      owner: satire
+      triggers:
+        enabled:
+          CHAT: true
+          DAMAGE: false
+          CLICK: true
+          PROXIMITY: true
+        duration:
+          CHAT: 1.0
+          PROXIMITY: 1.0
+        radius:
+          CHAT: 5
+          PROXIMITY: 5
+      spawned: true
+      assignment:
+        assignment: LUDWIGSJOBS
+      lookclose:
+        enabled: false
+        range: '5.0'
+        realisticlooking: false
+      speech: chat
+      location:
+        world: world
+        x: '-293.30000001192093'
+        y: '64.0'
+        z: '284.472075203875'
+        yaw: '-45.544376373291016'
+        pitch: '-27.35857582092285'
+    name: Ludwig
+    traitnames: owner,constants,type,triggers,spawned,assignment,lookclose,speech,location
+    navigator:
+      speed: '1.0'
+      pathfindingrange: '25.0'
+      stationaryticks: -1
+      speedmodifier: '1.0'
+      avoidwater: false
+      usedefaultstuckaction: true
+  '2':
+    traits:
+      owner: satire
+      triggers:
+        enabled:
+          CHAT: true
+          DAMAGE: false
+          CLICK: true
+          PROXIMITY: true
+        duration:
+          CHAT: 1.0
+          PROXIMITY: 1.0
+        radius:
+          CHAT: 5
+          PROXIMITY: 5
+      spawned: true
+      assignment:
+        assignment: ARTHURSJOBS
+      lookclose:
+        enabled: false
+        range: '5.0'
+        realisticlooking: false
+      speech: chat
+      location:
+        world: world
+        x: '-293.30000001192093'
+        y: '64.0'
+        z: '280.58553523268273'
+        yaw: '-89.036376953125'
+        pitch: '-22.96828842163086'
+    name: Arthur
+    traitnames: owner,constants,triggers,type,spawned,assignment,lookclose,speech,location
+    navigator:
+      speed: '1.0'
+      pathfindingrange: '25.0'
+      stationaryticks: -1
+      speedmodifier: '1.0'
+      avoidwater: false
+      usedefaultstuckaction: true
+  '3':
+    traits:
+      owner: satire
+      triggers:
+        enabled:
+          CHAT: true
+          DAMAGE: false
+          CLICK: true
+          PROXIMITY: true
+        duration:
+          CHAT: 1.0
+          PROXIMITY: 1.0
+        radius:
+          CHAT: 5
+          PROXIMITY: 5
+      spawned: true
+      assignment:
+        assignment: ROTTHIERSJOBS
+      lookclose:
+        enabled: false
+        range: '5.0'
+        realisticlooking: false
+      speech: chat
+      location:
+        world: world
+        x: '-288.49883778974316'
+        y: '64.0'
+        z: '280.5013130096532'
+        yaw: '173.90499877929688'
+        pitch: '0.0'
+    name: Rotthier
+    traitnames: owner,constants,triggers,type,spawned,assignment,lookclose,speech,location
+    navigator:
+      speed: '1.0'
+      pathfindingrange: '25.0'
+      stationaryticks: -1
+      speedmodifier: '1.0'
+      avoidwater: false
+      usedefaultstuckaction: true
+  '4':
+    traits:
+      owner: satire
+      triggers:
+        enabled:
+          CHAT: true
+          DAMAGE: false
+          CLICK: true
+          PROXIMITY: true
+        duration:
+          CHAT: 1.0
+          PROXIMITY: 1.0
+        radius:
+          CHAT: 5
+          PROXIMITY: 5
+      spawned: true
+      assignment:
+        assignment: LATIRSJOBS
+      lookclose:
+        enabled: false
+        range: '5.0'
+        realisticlooking: false
+      speech: chat
+      location:
+        world: world
+        x: '-288.69999998807907'
+        y: '64.0'
+        z: '284.43513573406676'
+        yaw: '18.332061767578125'
+        pitch: '-29.435285568237305'
+    name: Latir
+    traitnames: owner,constants,type,triggers,spawned,assignment,lookclose,speech,location
+    navigator:
+      speed: '1.0'
+      pathfindingrange: '25.0'
+      stationaryticks: -1
+      speedmodifier: '1.0'
+      avoidwater: false
+      usedefaultstuckaction: true
+  '5':
+    traits:
+      owner: satire
+      triggers:
+        enabled:
+          CHAT: true
+          DAMAGE: false
+          CLICK: true
+          PROXIMITY: true
+        duration:
+          CHAT: 1.0
+          PROXIMITY: 1.0
+        radius:
+          CHAT: 5
+          PROXIMITY: 5
+      spawned: true
+      assignment:
+        assignment: TUSANSJOBS
+      lookclose:
+        enabled: false
+        range: '5.0'
+        realisticlooking: false
+      speech: chat
+      location:
+        world: world
+        x: '-288.4432376449371'
+        y: '64.0'
+        z: '288.53206887658314'
+        yaw: '-13.319786071777344'
+        pitch: '-12.493841171264648'
+    name: Tusan
+    traitnames: owner,constants,type,triggers,spawned,assignment,lookclose,speech,location
+    navigator:
+      speed: '1.0'
+      pathfindingrange: '25.0'
+      stationaryticks: -1
+      speedmodifier: '1.0'
+      avoidwater: false
+      usedefaultstuckaction: true
+  '6':
+    traits:
+      owner: satire
+      triggers:
+        enabled:
+          CHAT: true
+          DAMAGE: false
+          CLICK: true
+          PROXIMITY: true
+        duration:
+          CHAT: 1.0
+          PROXIMITY: 1.0
+        radius:
+          CHAT: 5
+          PROXIMITY: 5
+      spawned: true
+      assignment:
+        assignment: KANTHONSJOBS
+      lookclose:
+        enabled: false
+        range: '5.0'
+        realisticlooking: false
+      speech: chat
+      location:
+        world: world
+        x: '-293.69999998807907'
+        y: '64.0'
+        z: '288.6414140005098'
+        yaw: '-68.94576263427734'
+        pitch: '-14.590608596801758'
+    name: Kanthon
+    traitnames: owner,constants,triggers,type,spawned,assignment,lookclose,speech,location
+    navigator:
+      speed: '1.0'
+      pathfindingrange: '25.0'
+      stationaryticks: -1
+      speedmodifier: '1.0'
+      avoidwater: false
+      usedefaultstuckaction: true
+  '7':
+    traits:
+      owner: satire
+      triggers:
+        enabled:
+          CHAT: true
+          DAMAGE: false
+          CLICK: true
+          PROXIMITY: true
+        duration:
+          CHAT: 1.0
+          PROXIMITY: 1.0
+        radius:
+          CHAT: 5
+          PROXIMITY: 5
+      spawned: true
+      assignment:
+        assignment: FULGURSJOBS
+      lookclose:
+        enabled: false
+        range: '5.0'
+        realisticlooking: false
+      speech: chat
+      location:
+        world: world
+        x: '-293.30137628009595'
+        y: '64.0'
+        z: '292.69999998807907'
+        yaw: '223.82373046875'
+        pitch: '-21.457847595214844'
+    name: Fulgur
+    traitnames: owner,constants,triggers,type,spawned,assignment,lookclose,speech,location
+    navigator:
+      speed: '1.0'
+      pathfindingrange: '25.0'
+      stationaryticks: -1
+      speedmodifier: '1.0'
+      avoidwater: false
+      usedefaultstuckaction: true
+  '8':
+    traits:
+      owner: satire
+      triggers:
+        enabled:
+          CHAT: true
+          DAMAGE: false
+          CLICK: true
+          PROXIMITY: true
+        duration:
+          CHAT: 1.0
+          PROXIMITY: 1.0
+        radius:
+          CHAT: 5
+          PROXIMITY: 5
+      spawned: true
+      assignment:
+        assignment: ZELDASJOBS
+      lookclose:
+        enabled: false
+        range: '5.0'
+        realisticlooking: false
+      speech: chat
+      location:
+        world: world
+        x: '-288.379174975139'
+        y: '64.0'
+        z: '292.69999998807907'
+        yaw: '-31.7086181640625'
+        pitch: '0.0'
+    name: Zelda
+    traitnames: owner,constants,triggers,type,spawned,assignment,lookclose,speech,location
+    navigator:
+      speed: '1.0'
+      pathfindingrange: '25.0'
+      stationaryticks: -1
+      speedmodifier: '1.0'
+      avoidwater: false
+      usedefaultstuckaction: true
+  '9':
+    traits:
+      owner: satire
+      triggers:
+        enabled:
+          CHAT: true
+          DAMAGE: false
+          CLICK: true
+          PROXIMITY: true
+        duration:
+          CHAT: 1.0
+          PROXIMITY: 1.0
+        radius:
+          CHAT: 5
+          PROXIMITY: 5
+      spawned: true
+      assignment:
+        assignment: CADDISSJOBS
+      lookclose:
+        enabled: false
+        range: '5.0'
+        realisticlooking: false
+      speech: chat
+      location:
+        world: world
+        x: '-293.49874276581994'
+        y: '64.0'
+        z: '296.69999998807907'
+        yaw: '-80.61519622802734'
+        pitch: '-42.24317169189453'
+    name: Caddis
+    traitnames: owner,constants,triggers,type,spawned,assignment,lookclose,speech,location
+    navigator:
+      speed: '1.0'
+      pathfindingrange: '25.0'
+      stationaryticks: -1
+      speedmodifier: '1.0'
+      avoidwater: false
+      usedefaultstuckaction: true

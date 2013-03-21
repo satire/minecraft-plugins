@@ -1,0 +1,215 @@
+'TusansJobs': 
+    type: assignment                        
+    interact scripts:
+        - 0 defaultInteract
+        - 1 leaveErdesz
+        - 2 joinErdesz
+        - 3 waitingForPlant
+        - 3 plantFinished
+
+    default constants:
+        jobsCooldown: 60       
+    
+    actions:
+        on assignment:
+        - trigger name:chat toggle:true radius:5 cooldown:1
+        - trigger name:proximity toggle:true radius:5 cooldown:1
+ 
+'defaultInteract':
+    type: interact
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Jelenleg nincs munkám a számodra!"
+                - DISENGAGE       
+
+'joinErdesz':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - -FLAGGED 'jobQuest:begin'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Üdvözöllek vándor!"
+                - WAIT 1
+                - CHAT "Az én nevem <npc.name>."
+                - WAIT 1
+                - CHAT "Ha elszegődnél erdésznek, nállam jelentkezhetsz."
+                - NARRATE "Erdész feladat [f]elvétele"              
+                - DISENGAGE
+                
+                
+            CHAT trigger:
+                'joinEnchanter':
+                    trigger: Szeretném /f/elvenni az erdész feladatot.
+                    script:
+                    - ENGAGE
+                    - CHAT "Az erdészek feladata, nem csak a fák kivágásából áll."
+                    - WAIT 1
+                    - CHAT "Csak akkor állhatsz erdésznek, ha bizonyítod elhivatottságod erdeink rendbentartásában."
+                    - WAIT 1
+                    - CHAT "Az erdésznek tisztelni és becsülni kell az erdőt, amit gondoz."
+                    - WAIT 1
+                    - CHAT "Ne hagyd szanaszét a kivágott fák lombját és mindig ültess a helyükre újat."
+                    - WAIT 1
+                    - GIVE ITEM:6 QTY:5
+                    - CHAT "Tessék, itt van néhány facsemete, ültesd el őket a környező erdőben."
+                    - WAIT 1
+                    - CHAT "Ha végeztél térj vissza hozzám és kinevezlek erdésznek."
+                    - LISTEN BLOCK ID:<player.name>_erdeszListener TYPE:BUILD BLOCK:6 QTY:5 SCRIPT:plantComplete
+                    - FLAG player 'erdeszQuest:begin'
+                    - FLAG player 'jobQuest:begin'
+                                        
+                    - DISENGAGE
+
+'waitingForPlant':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - FLAGGED 'erdeszQuest:begin'
+    steps:
+        1:           
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Hozz nekem <gold>2 botot <green>amiből nyelet készíthetek."                
+                - NARRATE "[A]bbahagyom a küldetést."              
+                - DISENGAGE
+                
+            CHAT trigger:
+                'enderdeszQuest':
+                    trigger: /A/bbahagyom a küldetést.
+                    script:
+                    - ENGAGE 
+                    - CHAT "Sajnálom, hogy nem sikerült, talán legközelebb."
+                    - LISTEN CANCEL ID:<player.name>_erdeszListener
+                    - LISTEN FINISH ID:<player.name>_erdeszListener     
+                    - FLAG player 'jobQuest:null'
+                    - FLAG player 'erdeszQuest:null'
+                    - DISENGAGE                     
+
+'plantComplete':
+    type: task
+    script:
+    - FLAG player 'erdeszQuest:finished'
+    - NARRATE "Sikeresen elültetted a facsemetéket, térj vissza Tusanhoz." 
+
+'plantFinished':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - -FLAGGED 'employed:true'
+            - FLAGGED 'erdeszQuest:finished'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location> 
+                    - CHAT "Örülök, hogy ilyen hamar visszaértél."                         
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Remek munkát végeztél."                
+                - WAIT 1
+                - CHAT "Mostmár örömmel felveszlek erdésznek."
+                - EXECUTE as_server "mcjobsadmin add <player.name> erdész"
+                - WAIT 1
+                - CHAT "És amiért segítettél, fogadd el ezt a baltát, ezzel gyorsan megy a favágás!"
+                - GIVE "item:tusansAxe"
+                - NARRATE "<npc.name> adott neked egy baltát."
+                - FLAG player 'erdeszQuest:null'
+                - FLAG player 'jobQuest:null'
+                - FLAG player 'employed:true'
+                - FLAG player 'job:erdész'
+                
+                - DISENGAGE         
+
+'leaveErdesz':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - FLAGGED 'employed:true'
+            - FLAGGED 'job:erdész'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Köszöntelek <gold><player.name><green>!"
+                - WAIT 1
+                - CHAT "Ha szeretnéd leadni az erdész munkát, csak szólj nekem."               
+                - NARRATE "Erdész feladat [l]eadása"
+                - NARRATE "<red>A feladatot 5 óra mulva veheted fel ismét és a tapasztalati pontjaid törlődnek!"               
+                - DISENGAGE
+                
+            CHAT trigger:               
+                'leaveErdesz':
+                    trigger: Szeretném /l/eadni a erdész feladatot.
+                    script:
+                    - ENGAGE
+                    - EXECUTE as_server "mcjobsadmin remove <player.name> erdész"
+                    - FLAG player 'erdeszQuest:null'
+                    - FLAG player 'jobQuest:null'
+                    - FLAG player 'employed:false'
+                    - FLAG player 'job:null'
+                    - COOLDOWN PLAYER <cons:jobsCooldown> "SCRIPT:joinErdesz" 
+                    - DISENGAGE
+                    
+                    
+'tusansAxe':
+    type: item
+    material: 258
+    display name: "Tusan baltája"
+#    lore:
+#    - first line of lore
+#    - second line of lore
+    enchantments:
+    - DIG_SPEED:3
+    - LOOT_BONUS_BLOCKS:1
+
+ 

@@ -1,0 +1,37 @@
+dScript:
+  Locations: []
+Listeners: {}
+Players:
+  satire:
+    Flags:
+      KOVACSQUEST:
+      - 'null'
+      KOVACSQUEST-expiration: -1
+      JOBQUEST:
+      - 'null'
+      JOBQUEST-expiration: -1
+      BANYASZQUEST:
+      - 'null'
+      BANYASZQUEST-expiration: -1
+      HALASZQUEST:
+      - begin
+      HALASZQUEST-expiration: -1
+      EMPLOYED:
+      - 'true'
+      EMPLOYED-expiration: -1
+      JOB:
+      - méregkeverő
+      JOB-expiration: -1
+      KATONAQUEST:
+      - 'null'
+      KATONAQUEST-expiration: -1
+      KATONA:
+      - 'false'
+      KATONA-expiration: -1
+      MEREGKEVEROQUEST:
+      - 'null'
+      MEREGKEVEROQUEST-expiration: -1
+  SATIRE:
+    Scripts:
+      JOINBANYASZ: {}
+      JOINKATONA: {}

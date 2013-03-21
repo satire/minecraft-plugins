@@ -1,0 +1,86 @@
+'lumbiddlesQuests':
+    type: assignment                      
+    interact scripts:
+    
+        - 0 selectLumbiddlesQuest
+        
+        - 1 exchangeMachineMasterAxe
+        
+        
+    actions:
+        on assignment:
+        - trigger name:chat toggle:true cooldown:1
+        - trigger name:proximity toggle:true cooldown:1
+   
+'selectLumbiddlesQuest':
+    type: interact
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 3
+                Exit Radius: 3
+                Cooldown: 1
+                Entry:
+                    script:
+                    - ENGAGE  
+                    - LOOK location:<player.location>                            
+                    - CHAT 'Szép nyálkás, ködös időnk van nem?'
+                    - DISENGAGE
+
+'exchangeMachineMasterAxe':
+    type: interact
+    requirements:
+        mode: All
+        list:
+        - FLAGGED 'machinesMastersQuest:find'
+        - ITEM 339 QTY:1
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 3
+                Exit Radius: 3
+                Cooldown: 1
+                Entry:
+                    script:
+                    - ENGAGE  
+                    - LOOK location:<player.location>                            
+                    - CHAT 'Szép nyálkás, ködös időnk van nem?'
+                    - DISENGAGE
+            
+            CLICK trigger:
+                script: 
+                - ENGAGE
+                - CHAT 'Mi járatban erre felé?'
+                - NARRATE '[A] Masinétiák mester küldött a baltájáért.'
+                - DISENGAGE                
+                    
+            CHAT trigger:
+                'axe':
+                    trigger: /A/ Masinériák mester küldött a baltájáért.
+                    script:
+                    - ENGAGE                     
+                    - LOOK location:<player.location>                                      
+                    - CHAT 'Ejh a morgós vén bolond és a drágaláttos baltája.' 
+                   #  - WAIT 2
+                    - CHAT 'Megkapod a baltát, ha elhozol nekem egy leírást a gépházból.' 
+                    - NARRATE 'Odaadom a papi[r]t Lumbiddle-nek'
+                    - DISENGAGE
+                    
+                'paper':
+                    trigger:  Ez a leí/r/ása, a bizgenttyűk kallantyúinak ... vagy a kallantyúk ...
+                    script:
+                    - ENGAGE
+                    - TAKE ITEM:339 QTY:1
+                    - NARRATE '<npc.name> elvette tőled a használati útmutatót.'
+                   #  - WAIT 2                    
+                    - CHAT 'Köszönöm pont erre volt szükségem!'                    
+                    - GIVE ITEM:275 QTY:1                    
+                   #  - WAIT 2
+                    - CHAT 'Tessék itt a balta, bár nem értem mit szeret annyira ezen a vackon!'
+                    - NARRATE '<npc.name> odaadta a Masinériák Mesterének baltáját.'
+                   #  - WAIT 2
+                    - CHAT 'De mostmár siess, ne várakoztasd meg a Mestert, mert összeköti a bokádat mire háromig számolsz.'             
+                    - FLAG player machinesMastersQuest:findFinished       
+                    - NARRATE 'Végeztél a feladattal, vár a jutalom!'
+                    - DISENGAGE
+                    

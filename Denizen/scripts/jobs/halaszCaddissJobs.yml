@@ -1,0 +1,152 @@
+'CaddissJobs': 
+    type: assignment                        
+    interact scripts:
+        - 0 caddisDefaultInteract
+        - 1 caddisWaitingForMoney
+        - 2 halaszFinished
+        - 3 caddisAddRod
+
+    default constants:
+        jobsCooldown: 60       
+    
+    actions:
+        on assignment:
+        - trigger name:chat toggle:true radius:5 cooldown:1
+        - trigger name:proximity toggle:true radius:5 cooldown:1
+ 
+'caddisDefaultInteract':
+    type: interact
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Üdvözöllek vándor!"
+                - WAIT 1
+                - CHAT "Az én nevem <npc.name>."
+                - WAIT 1
+                - CHAT "Én vagyok a fő horgász a városban, töllem kaphatsz engedélyt a halászatra."
+                - NARRATE "Halász feladat [f]elvétele"              
+                - DISENGAGE
+                
+                
+            CHAT trigger:
+                'joinEnchanter':
+                    trigger: Szeretném /f/elvenni a halász feladatot.
+                    script:
+                    - ENGAGE
+                    - CHAT "Ha szeretnél horgászni a város vizein, ki kell váltanod az engedélyt."
+                    - WAIT 1
+                    - CHAT "A horgászengedély <gold>200 koronába <green>kerül."
+                    - WAIT 1
+                    - CHAT "Gyere vissza, ha van ennyi pénzed."
+                    - NARRATE "<gray>A halász feladatot bármikor felveheted egyszeri <gold>200 korona <gray>megfizetéséért cserébe." 
+                    - FLAG player 'halaszQuest:begin'
+                    - DISENGAGE
+
+
+'caddisWaitingForMoney':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - FLAGGED 'halaszQuest:begin'            
+    steps:
+        1:           
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Szerezz <gold>200 koronát <green>az engedélyre."                
+                - NARRATE "[A]bbahagyom a küldetést."              
+                - DISENGAGE
+                
+            CHAT trigger:
+                'endHalaszQuest':
+                    trigger: /A/bbahagyom a küldetést.
+                    script:
+                    - ENGAGE 
+                    - CHAT "Sajnálom, hogy nem sikerült, talán legközelebb."
+                    - FLAG player 'halaszQuest:null'
+                    - DISENGAGE                     
+
+'halaszFinished':
+    type: interact
+    requirements:
+        mode: All
+        list:
+            - FLAGGED 'halaszQuest:begin'
+            - MONEY QTY:200
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location> 
+                    - CHAT "Örülök, hogy újra látlak"                         
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - TAKE MONEY QTY:200
+                - NARRATE "<npc.name> elvett tőled <gold>200 koronát<white>."
+                - WAIT 5
+                - CHAT "Mostmár engedélyel halászhatsz a városhoz tartozó vizeken."
+                - EXECUTE as_server "mcjobsadmin add <player.name> halász"
+                - WAIT 1                
+                - CHAT "Ha bármikor szükséged van horgászfelszerelésre, keress meg bátran."
+                - GIVE ITEM:346 QTY:1
+                - NARRATE "<npc.name> adott neked <gold>1 horgászbotot<white>."               
+                - DISENGAGE         
+
+'caddisAddRod':
+    type: interact
+    requirements:
+        mode: All
+        list:
+        - FLAGGED 'halaszQuest:begin'
+    steps:
+        1:
+            PROXIMITY trigger:
+                Entry Radius: 5
+                Exit Radius: 5
+                Cooldown: 1
+                Entry:
+                    script:
+                    - LOOK location:<player.location>                          
+        
+            CLICK trigger:
+                script:
+                - ENGAGE
+                - LOOK location:<player.location>
+                - CHAT "Köszöntelek <gold><player.name><green>!"
+                - WAIT 1
+                - CHAT "Miben segíthetek?"               
+                - NARRATE "Szeretnék egy [h]orgászbotot."            
+                - DISENGAGE
+                
+            CHAT trigger:               
+                'leaveKovacs':
+                    trigger: Szeretnék egy /h/orgászbotot.
+                    script:
+                    - ENGAGE
+                    - CHAT "Persze, azonnal adom."
+                    - WAIT 2
+                    - GIVE ITEM:346 QTY:1
+                    - NARRATE "<npc.name> adott neked <gold>1 horgászbotot<white>."
+                    - CHAT "Ha bármikor szükséged van horgász felszerelésre, keress meg bátran."
+                    - DISENGAGE
+                    

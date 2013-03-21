@@ -1,0 +1,15 @@
+trader-types:
+- CREEPER
+- PLAYER
+- SKELETON
+- ZOMBIE
+- PIG_ZOMBIE
+- ENDERMAN
+- BLAZE
+- WOLF
+- IRON_GOLEM
+- VILLAGER
+Check-For-Updates: true
+debug:
+  tradercount: false
+language: en
