@@ -2,7 +2,7 @@
 # server console
 
 Debug:
-  Show: true
+  Show: false
 
 Scripts:
   Queue Speed: 0.5s
